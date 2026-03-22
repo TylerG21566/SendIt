@@ -1,40 +1,52 @@
 #pragma once
 #include <string_view>
+#include <string>
+#include <unordered_map>
+
+using TokenType = std::string_view;
 
 namespace TknType {
   
-  constexpr std::string_view ILLEGAL = "ILLEGAL";
-  constexpr std::string_view END_F = "EOF";
+  // CONTROL
+  constexpr TokenType ILLEGAL = "ILLEGAL";
+  constexpr TokenType END_F = "EOF";
 
-  constexpr std::string_view IDENT = "IDENT";
-  constexpr std::string_view INT = "INT";
+  // ALPHA LITERAL: literal that starts with letter
+  constexpr TokenType FUNC = "FUNC";
+  constexpr TokenType LET = "LET";
+  constexpr TokenType IDENT = "IDENT";
 
-  constexpr std::string_view ASSIGN = "=";
-  constexpr std::string_view PLUS = "+";
+  // NUMERIC LITERAL: literal that starts with number
+  constexpr TokenType INT = "INT";
 
-  constexpr std::string_view COMMA = ",";
-  constexpr std::string_view SEMICOLON = ";";
+  constexpr TokenType ASSIGN = "=";
+  constexpr TokenType PLUS = "+";
 
-  constexpr std::string_view LPAREN = "(";
-  constexpr std::string_view RPAREN = ")";
-  constexpr std::string_view LBRACE = "{";
-  constexpr std::string_view RBRACE = "}";
-
-  constexpr std::string_view FUNC = "FUNC";
-  constexpr std::string_view LET = "LET";
+  // DELIMMITER
+  constexpr TokenType COMMA = ",";
+  constexpr TokenType SEMICOLON = ";";
+  constexpr TokenType LPAREN = "(";
+  constexpr TokenType RPAREN = ")";
+  constexpr TokenType LBRACE = "{";
+  constexpr TokenType RBRACE = "}";
 }
+
+inline const std::unordered_map<std::string, TokenType> KEYWORDS = {
+  {"let",    TknType::LET},
+  {"fn",     TknType::FUNC},
+};
 
 class Token {
  private:
-  std::string_view type;
-  std::string_view literal;
+  TokenType type;
+  TokenType literal;
 
  //public:
 };
 
 struct TokenStruct{
-  std::string_view type;
-  char literal;
+  TokenType type;
+  std::string literal;
 
   auto operator<=>(const TokenStruct&) const = default;
 };
