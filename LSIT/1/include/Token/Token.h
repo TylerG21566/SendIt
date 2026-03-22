@@ -34,5 +34,7 @@ class Token {
 
 struct TokenStruct{
   std::string_view type;
-  std::string_view literal;
+  char literal;
+
+  auto operator<=>(const TokenStruct&) const = default;
 };

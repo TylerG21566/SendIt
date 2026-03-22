@@ -1,25 +1,26 @@
-cmake_minimum_required(VERSION 3.24.3) # declare min CMAKE version
-# declare project
+cmake_minimum_required(VERSION 3.24.3)
 project(lsit LANGUAGES CXX)
-# set the C++ standard
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# add my library
-add_library(lsit INTERFACE)
-# tell cmake where your headers are
-target_include_directories(lsit INTERFACE include/)
-# enable compiler warnings
-target_compile_options(lsit INTERFACE -Wall -Wextra -Wpedantic)
-# find and link GoogleTest
+
+# Collect src files
+file(GLOB_RECURSE LSIT_SOURCES "src/*.cpp")
+
+add_library(lsit STATIC ${LSIT_SOURCES})
+target_include_directories(lsit PUBLIC include/)
+target_compile_options(lsit PRIVATE -Wall -Wextra -Wpedantic)
+
 find_package(GTest REQUIRED)
-# Add test executable
-add_executable(lsit_tests tests/main.cpp)
-# link your test executable
+
+# Collect test files, excluding main.cpp
+file(GLOB_RECURSE TEST_SOURCES "tests/*.cpp")
+list(REMOVE_ITEM TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tests/main.cpp")
+
+add_executable(lsit_tests tests/main.cpp ${TEST_SOURCES})
 target_link_libraries(lsit_tests PRIVATE lsit GTest::gtest GTest::gtest_main)
-# enabling Asan
 target_compile_options(lsit_tests PRIVATE -fsanitize=address,undefined)
-# enabling UBSan
 target_link_options(lsit_tests PRIVATE -fsanitize=address,undefined)
-# enable CTest
+
 enable_testing()
 add_test(NAME lsit_tests COMMAND lsit_tests)
