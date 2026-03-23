@@ -11,9 +11,6 @@ bool LexerState::isNum(char ch) { return isdigit(ch); };
 void LexerState::update_state(char ch) {
   if (state == "") {
     switch (ch) {
-      case '=':
-        state = TknType::ASSIGN;
-        break;
       case ';':
         state = TknType::SEMICOLON;
         break;
@@ -35,9 +32,35 @@ void LexerState::update_state(char ch) {
       case '}':
         state = TknType::RBRACE;
         break;
+      case '*':
+        state = TknType::ASTERISK;
+        break;
+      case '/':
+        state = TknType::SLASH;
+        break;
+      case '-':
+        state = TknType::MINUS;
+        break;
+      case '<':
+        state = TknType::LT;
+        break;
+      case '>':
+        state = TknType::GT;
+        break;
+      // potential 2 character Token
+      case '!':
+        state = TknType::BANG;
+        break;
+      case '=':
+        state = TknType::ASSIGN;
+        break;
+
+      // NULL terminator
       case NULL_CH:
         state = TknType::END_F;
         break;
+
+      // ALPHANUMERIC SPOTTED
       default:
         if (LexerState::isNum(ch)) {
           state = TknType::INT;
@@ -51,36 +74,35 @@ void LexerState::update_state(char ch) {
   }
 };
 
+/* decide whether next character forces a token to be emmitted */
 bool LexerState::next_character_perserves_state(char ch) {
-  if (state != TknType::INT && state != TknType::IDENT) {
+  // WHITESPACE always emmits token
+  // gauranteed 1 character length Token match
+  if (std::isspace(ch) ||
+      (state != TknType::INT && state != TknType::IDENT &&
+       state != TknType::BANG && state != TknType::ASSIGN)) {
     return false;
   };
 
-  if (std::isspace(ch)) {
-    return false;
-  };
+  // INT type
+  if (state == TknType::INT) {
+    return isdigit(ch);
+  }
 
-  switch (ch) {
-    case '=':
-      return false;
-    case ';':
-      return false;
-    case '(':
-      return false;
-    case ')':
-      return false;
-    case ',':
-      return false;
-    case '+':
-      return false;
-    case '{':
-      return false;
-    case '}':
-      return false;
-    case NULL_CH:
-      return false;
-    default:
-      if (isalnum(ch)) return true;
-      return false;
-  };
+  if (state == TknType::IDENT) {
+    return isalnum(ch);
+  }
+
+  if (state == TknType::BANG) {
+    return ch == '=';
+  }
+
+  if (state == TknType::ASSIGN) {
+    return ch == '=';
+  }
+
+
+
+  // ILLEGAL character
+  return false;
 };

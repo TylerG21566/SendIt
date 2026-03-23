@@ -7,7 +7,7 @@ using TokenType = std::string_view;
 
 namespace TknType {
   
-  // CONTROL
+  // UTILITY
   constexpr TokenType ILLEGAL = "ILLEGAL";
   constexpr TokenType END_F = "EOF";
 
@@ -19,8 +19,28 @@ namespace TknType {
   // NUMERIC LITERAL: literal that starts with number
   constexpr TokenType INT = "INT";
 
+  // CONTROL FLOW
+  constexpr TokenType IF = "IF";
+  constexpr TokenType ELSE = "ELSE";
+  constexpr TokenType RETURN = "RETURN";
+
+
+  // OPERATORS
   constexpr TokenType ASSIGN = "=";
+
   constexpr TokenType PLUS = "+";
+  constexpr TokenType SLASH = "/";
+  constexpr TokenType ASTERISK = "*";
+  constexpr TokenType MINUS = "-";
+
+  constexpr TokenType GT = ">";
+  constexpr TokenType LT = "<";
+  constexpr TokenType BANG = "!";
+
+  constexpr TokenType NEQ = "!=";
+  constexpr TokenType EQ = "==";
+  //constexpr TokenType GTE = ">=";
+  //constexpr TokenType LTE = "<=";
 
   // DELIMMITER
   constexpr TokenType COMMA = ",";
@@ -34,15 +54,20 @@ namespace TknType {
 inline const std::unordered_map<std::string, TokenType> KEYWORDS = {
   {"let",    TknType::LET},
   {"fn",     TknType::FUNC},
+  {"if", TknType::IF},
+  {"else", TknType::ELSE},
+  //{"return", TknType::RETURN},
 };
 
-class Token {
- private:
-  TokenType type;
-  TokenType literal;
-
- //public:
+inline const std::unordered_map<char, TokenType> SINGLE_CHAR_TOKENS = {
+    {';', TknType::SEMICOLON}, {'(', TknType::LPAREN},
+    {')', TknType::RPAREN},    {',', TknType::COMMA},
+    {'+', TknType::PLUS},      {'{', TknType::LBRACE},
+    {'}', TknType::RBRACE},    {'*', TknType::ASTERISK},
+    {'/', TknType::SLASH},     {'-', TknType::MINUS},
+    {'<', TknType::LT},        {'>', TknType::GT},
 };
+
 
 struct TokenStruct{
   TokenType type;

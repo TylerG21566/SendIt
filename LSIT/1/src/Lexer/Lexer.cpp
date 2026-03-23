@@ -26,19 +26,14 @@ void Lexer::printDebugVector() {
     std::cout << "Token_Type: " << t.type << " | "
               << "Token_literal: " << t.literal << std::endl;
   };
-
   std::cout << "//////////////////////////" << std::endl << std::endl;
 };
 
 char Lexer::peek() {
-  char c;
   if (readPosition >= getInputSize()) {
-    c = NULL_CH;
-  } else {
-    c = input.at(readPosition);
+    return NULL_CH;
   }
-
-  return c;
+  return input.at(readPosition);
 };
 
 int Lexer::getInputSize() { return size; }
@@ -69,7 +64,10 @@ TokenStruct Lexer::NextToken() {
     ls.update_state(ch);
     // get next_state
     new_token_needed = !ls.next_character_perserves_state(this->peek());
-    std::cout << position << " " << readPosition << " " << ch << " " << this->peek() << std::endl;
+    if (debug_mode) {
+      std::cout << position << " " << readPosition << " " << ch << " "
+                << this->peek() << std::endl;
+    };
     readChar();
   }
 
@@ -78,57 +76,98 @@ TokenStruct Lexer::NextToken() {
     readChar();
   }
 
-  // std::cout << "INNNNNNNPPPPUUUUUTTT" << input << std::endl;
+  TokenType tt;
 
   switch (firstCharacter) {
-    case '=':
-      tok = newToken(TknType::ASSIGN, working_literal);
-      break;
     case ';':
-      tok = newToken(TknType::SEMICOLON, working_literal);
+      tt = TknType::SEMICOLON;
       break;
     case '(':
-      tok = newToken(TknType::LPAREN, working_literal);
+      tt = TknType::LPAREN;
       break;
     case ')':
-      tok = newToken(TknType::RPAREN, working_literal);
+      tt = TknType::RPAREN;
       break;
     case ',':
-      tok = newToken(TknType::COMMA, working_literal);
+      tt = TknType::COMMA;
       break;
     case '+':
-      tok = newToken(TknType::PLUS, working_literal);
+      tt = TknType::PLUS;
       break;
     case '{':
-      tok = newToken(TknType::LBRACE, working_literal);
+      tt = TknType::LBRACE;
       break;
     case '}':
-      tok = newToken(TknType::RBRACE, working_literal);
+      tt = TknType::RBRACE;
       break;
+    case '*':
+      tt = TknType::ASTERISK;
+      break;
+    case '/':
+      tt = TknType::SLASH;
+      break;
+    case '-':
+      tt = TknType::MINUS;
+      break;
+    case '<':
+      tt = TknType::LT;
+      break;
+    case '>':
+      tt = TknType::GT;
+      break;
+      // potential 2 character Token
+    case '!':
+      if (working_literal == TknType::NEQ){
+        tt = TknType::NEQ;
+      }else{
+        tt = TknType::BANG;
+      }
+      break;
+    case '=':
+      if (working_literal == TknType::EQ){
+        tt = TknType::EQ;
+      }else{
+        tt = TknType::ASSIGN;
+      }
+      break;
+
     case NULL_CH:
-      tok = newToken(TknType::END_F, working_literal);
+      tt = TknType::END_F;
       break;
+
     default:
+
       auto it = KEYWORDS.find(working_literal);
       if (it != KEYWORDS.end()) {
-          std::string_view type = it->second;   // it->first is the key, it->second is the value
-          tok = newToken(type, working_literal);
-          break;
+        std::string_view type =
+            it->second;  // it->first is the key, it->second is the value
+        tt = type;
+        break;
       }
+
       else if (isdigit(working_literal.at(0))) {
-        tok = newToken(TknType::INT, working_literal);
+        tt = TknType::INT;
         break;
       } else if (working_literal == "fn") {
-        tok = newToken(TknType::FUNC, working_literal);
+        tt = TknType::FUNC;
         break;
-      } else if (isalnum(working_literal.at(working_literal.size()-1))) {
-        tok = newToken(TknType::IDENT, working_literal);
+      } else if (isalnum(working_literal.at(working_literal.size() - 1))) {
+        tt = TknType::IDENT;
         break;
-      } else {
-        tok = newToken(TknType::ILLEGAL, working_literal);
-        break; 
+      } else if (working_literal == "!=") {
+        tt = TknType::NEQ;
+        break;
+      } else if (working_literal == "==") {
+        tt = TknType::EQ;
+        break;
+      }
+
+      else {
+        tt = TknType::ILLEGAL;
+        break;
       }
   };
+  tok = newToken(tt, working_literal);
 
   if (debug_mode) {
     tokens.push_back(tok);

@@ -8,6 +8,7 @@
 #include "Tests/common.h"
 #include "Token/Token.h"
 
+
 TEST(LexerTests, Lexer_sanity_check_Test) {
   std::string input = "=+(){},;";
   std::vector<TokenStruct> expected_tokens = {
@@ -23,8 +24,8 @@ TEST(LexerTests, Lexer_sanity_check_Test) {
 TEST(LexerTests, basic_source_code_with_white_space) {
   std::string input =
       "let five = 5;"
-      "let ten = 10;\n"
-      "\n"
+      "let ten =\n 10;\n"
+      "\n\n\n\n\n"
       "let add = fn(x, y) {\n"
       "x + y;\n"
       "\t};\n"
@@ -50,6 +51,28 @@ TEST(LexerTests, basic_source_code_with_white_space) {
       {TknType::COMMA, ","},     {TknType::IDENT, "ten"},
       {TknType::RPAREN, ")"},    {TknType::SEMICOLON, ";"},
       {TknType::END_F, ""}};
+
+  ASSERT_TRUE(compareExepectedAndReality(expected_tokens, input));
+}
+
+
+TEST(LexerTests, invalid_ident) {
+  std::string input ="1a23";
+  std::vector<TokenStruct> expected_tokens = {
+    {TknType::INT, "1"}, {TknType::IDENT, "a23"},
+    {TknType::END_F, ""}
+  };
+
+  ASSERT_TRUE(compareExepectedAndReality(expected_tokens, input));
+}
+
+TEST(LexerTests, invalid_variable_as_number) {
+  std::string input ="let 1234 = 5;";
+  std::vector<TokenStruct> expected_tokens = {
+    {TknType::LET, "let"}, {TknType::INT, "1234"},
+    {TknType::ASSIGN, "="}, {TknType::INT, "5"},
+    {TknType::SEMICOLON, ";"}, {TknType::END_F, ""}
+  };
 
   ASSERT_TRUE(compareExepectedAndReality(expected_tokens, input));
 }

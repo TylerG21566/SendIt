@@ -11,6 +11,8 @@ class LexerState{
 
     bool next_character_perserves_state(char ch);
 
+    // void finalise_state(char ch);
+
     bool isNum(char ch);
 
     bool isAlpha(char ch);
