@@ -180,3 +180,116 @@ let result = add(five, ten);
 
   ASSERT_TRUE(compareExepectedAndReality(expected_tokens, input));
 }
+
+TEST(LexerTests, full_program) {
+  std::string input = R"(let five = 5;
+let ten = 10;
+let add = fn(x, y) {
+x + y;
+};
+let result = add(five, ten);
+!-/*5;
+5 < 10 > 5;
+if (5 < 10) {
+return true;
+} else {
+return false;
+}
+10 == 10;
+10 != 9;)";
+
+  std::vector<TokenStruct> expected_tokens = {
+      // let five = 5;
+      {TknType::LET, "let"},
+      {TknType::IDENT, "five"},
+      {TknType::ASSIGN, "="},
+      {TknType::INT, "5"},
+      {TknType::SEMICOLON, ";"},
+      // let ten = 10;
+      {TknType::LET, "let"},
+      {TknType::IDENT, "ten"},
+      {TknType::ASSIGN, "="},
+      {TknType::INT, "10"},
+      {TknType::SEMICOLON, ";"},
+      // let add = fn(x, y) {
+      {TknType::LET, "let"},
+      {TknType::IDENT, "add"},
+      {TknType::ASSIGN, "="},
+      {TknType::FUNC, "fn"},
+      {TknType::LPAREN, "("},
+      {TknType::IDENT, "x"},
+      {TknType::COMMA, ","},
+      {TknType::IDENT, "y"},
+      {TknType::RPAREN, ")"},
+      {TknType::LBRACE, "{"},
+      // x + y;
+      {TknType::IDENT, "x"},
+      {TknType::PLUS, "+"},
+      {TknType::IDENT, "y"},
+      {TknType::SEMICOLON, ";"},
+      // };
+      {TknType::RBRACE, "}"},
+      {TknType::SEMICOLON, ";"},
+      // let result = add(five, ten);
+      {TknType::LET, "let"},
+      {TknType::IDENT, "result"},
+      {TknType::ASSIGN, "="},
+      {TknType::IDENT, "add"},
+      {TknType::LPAREN, "("},
+      {TknType::IDENT, "five"},
+      {TknType::COMMA, ","},
+      {TknType::IDENT, "ten"},
+      {TknType::RPAREN, ")"},
+      {TknType::SEMICOLON, ";"},
+      // !-/*5;
+      {TknType::BANG, "!"},
+      {TknType::MINUS, "-"},
+      {TknType::SLASH, "/"},
+      {TknType::ASTERISK, "*"},
+      {TknType::INT, "5"},
+      {TknType::SEMICOLON, ";"},
+      // 5 < 10 > 5;
+      {TknType::INT, "5"},
+      {TknType::LT, "<"},
+      {TknType::INT, "10"},
+      {TknType::GT, ">"},
+      {TknType::INT, "5"},
+      {TknType::SEMICOLON, ";"},
+      // if (5 < 10) {
+      {TknType::IF, "if"},
+      {TknType::LPAREN, "("},
+      {TknType::INT, "5"},
+      {TknType::LT, "<"},
+      {TknType::INT, "10"},
+      {TknType::RPAREN, ")"},
+      {TknType::LBRACE, "{"},
+      // return true;
+      {TknType::RETURN, "return"},
+      {TknType::IDENT, "true"},
+      {TknType::SEMICOLON, ";"},
+      // } else {
+      {TknType::RBRACE, "}"},
+      {TknType::ELSE, "else"},
+      {TknType::LBRACE, "{"},
+      // return false;
+      {TknType::RETURN, "return"},
+      {TknType::IDENT, "false"},
+      {TknType::SEMICOLON, ";"},
+      // }
+      {TknType::RBRACE, "}"},
+      // 10 == 10;
+      {TknType::INT, "10"},
+      {TknType::EQ, "=="},
+      {TknType::INT, "10"},
+      {TknType::SEMICOLON, ";"},
+      // 10 != 9;
+      {TknType::INT, "10"},
+      {TknType::NEQ, "!="},
+      {TknType::INT, "9"},
+      {TknType::SEMICOLON, ";"},
+      // EOF
+      {TknType::END_F, ""},
+  };
+
+  ASSERT_TRUE(compareExepectedAndReality(expected_tokens, input));
+}

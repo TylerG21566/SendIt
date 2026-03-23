@@ -55,7 +55,7 @@ inline const std::unordered_map<std::string, TokenType> KEYWORDS = {
     {"fn", TknType::FUNC},
     {"if", TknType::IF},
     {"else", TknType::ELSE},
-    //{"return", TknType::RETURN},
+    {"return", TknType::RETURN},
 };
 
 inline const std::unordered_map<char, TokenType> SINGLE_CHAR_TOKENS = {
