@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 
+
 using TokenType = std::string_view;
 
 namespace TknType {
@@ -66,6 +67,7 @@ inline const std::unordered_map<char, TokenType> SINGLE_CHAR_TOKENS = {
     {'}', TknType::RBRACE},    {'*', TknType::ASTERISK},
     {'/', TknType::SLASH},     {'-', TknType::MINUS},
     {'<', TknType::LT},        {'>', TknType::GT},
+    {'\0', TknType::END_F},
 };
 
 

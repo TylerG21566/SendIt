@@ -1,11 +1,11 @@
 #pragma once
 #include <string_view>
 #include <string>
-#include "Token/Token.h"
+#include "Lexer/Token.h"
 #include <vector>
-#include "Token/States.h"
+#include "Lexer/States.h"
 
-constexpr char NULL_CH = '\0';
+inline constexpr char NULL_CH = '\0';
 
 class Lexer {
  private:
@@ -29,6 +29,8 @@ class Lexer {
   int readChar();
 
   char peek();
+
+  void skipWhiteSpace();
 
   TokenStruct NextToken();
 

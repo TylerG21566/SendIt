@@ -1,8 +1,8 @@
 #include <vector>
 #include <iostream>
 
-#include "Lexer.h"
-#include "Token/Token.h"
+#include "Lexer/Lexer.h"
+#include "Lexer/Token.h"
 #include "Tests/common.h"
 
 bool compareExepectedAndReality(std::vector<TokenStruct> expected_tokens,

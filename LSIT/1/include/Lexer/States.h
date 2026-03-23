@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <string_view>
-#include "Token/Token.h"
+#include "Lexer/Token.h"
 
 class LexerState{
     public:
