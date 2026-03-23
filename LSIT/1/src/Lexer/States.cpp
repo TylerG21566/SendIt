@@ -4,10 +4,6 @@
 
 #include "Lexer/Lexer.h"
 
-bool LexerState::isAlpha(char ch) { return isalpha(ch); };
-
-bool LexerState::isNum(char ch) { return isdigit(ch); };
-
 void LexerState::update_state(char ch) {
   auto it = SINGLE_CHAR_TOKENS.find(ch);
 
@@ -20,9 +16,9 @@ void LexerState::update_state(char ch) {
     state = TknType::ASSIGN;
 
   // ALPHANUMERIC SPOTTED
-  else if (LexerState::isNum(ch))
+  else if (isdigit(ch))
     state = TknType::INT;
-  else if (LexerState::isAlpha(ch))
+  else if (isalpha(ch))
     state = TknType::IDENT;
   else
     state = TknType::ILLEGAL;

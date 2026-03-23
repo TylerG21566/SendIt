@@ -120,8 +120,7 @@ TokenStruct Lexer::NextToken() {
   return tok;
 }
 
-TokenStruct Lexer::newToken(std::string_view tknType,
-                            std::string previous_literal) {
+TokenStruct Lexer::newToken(TokenType tknType, std::string previous_literal) {
   return TokenStruct{tknType, previous_literal};
 };
 

@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "Lexer/Lexer.h"
-#include "Tests/common.h"
 #include "Lexer/Token.h"
+#include "Tests/common.h"
 
 TEST(LexerTests, Lexer_sanity_check_Test) {
   std::string input = "=+(){},;";
@@ -108,7 +108,7 @@ TEST(LexerTests, illegal_at_start_of_identifier) {
 }
 
 TEST(LexerTests, basic_program) {
-    std::string input = R"(let five = 5;
+  std::string input = R"(let five = 5;
 let ten = 10;
 let add = fn(x, y) {
 x + y;
@@ -117,37 +117,66 @@ let result = add(five, ten);
 !-/*5;
 5 < 10 > 5;)";
 
-    std::vector<TokenStruct> expected_tokens = {
-        // let five = 5;
-        {TknType::LET, "let"}, {TknType::IDENT, "five"}, {TknType::ASSIGN, "="},
-        {TknType::INT, "5"}, {TknType::SEMICOLON, ";"},
-        // let ten = 10;
-        {TknType::LET, "let"}, {TknType::IDENT, "ten"}, {TknType::ASSIGN, "="},
-        {TknType::INT, "10"}, {TknType::SEMICOLON, ";"},
-        // let add = fn(x, y) {
-        {TknType::LET, "let"}, {TknType::IDENT, "add"}, {TknType::ASSIGN, "="},
-        {TknType::FUNC, "fn"}, {TknType::LPAREN, "("}, {TknType::IDENT, "x"},
-        {TknType::COMMA, ","}, {TknType::IDENT, "y"}, {TknType::RPAREN, ")"},
-        {TknType::LBRACE, "{"},
-        // x + y;
-        {TknType::IDENT, "x"}, {TknType::PLUS, "+"}, {TknType::IDENT, "y"},
-        {TknType::SEMICOLON, ";"},
-        // };
-        {TknType::RBRACE, "}"}, {TknType::SEMICOLON, ";"},
-        // let result = add(five, ten);
-        {TknType::LET, "let"}, {TknType::IDENT, "result"}, {TknType::ASSIGN, "="},
-        {TknType::IDENT, "add"}, {TknType::LPAREN, "("}, {TknType::IDENT, "five"},
-        {TknType::COMMA, ","}, {TknType::IDENT, "ten"}, {TknType::RPAREN, ")"},
-        {TknType::SEMICOLON, ";"},
-        // !-/*5;
-        {TknType::BANG, "!"}, {TknType::MINUS, "-"}, {TknType::SLASH, "/"},
-        {TknType::ASTERISK, "*"}, {TknType::INT, "5"}, {TknType::SEMICOLON, ";"},
-        // 5 < 10 > 5;
-        {TknType::INT, "5"}, {TknType::LT, "<"}, {TknType::INT, "10"},
-        {TknType::GT, ">"}, {TknType::INT, "5"}, {TknType::SEMICOLON, ";"},
-        // EOF
-        {TknType::END_F, ""},
-    };
+  std::vector<TokenStruct> expected_tokens = {
+      // let five = 5;
+      {TknType::LET, "let"},
+      {TknType::IDENT, "five"},
+      {TknType::ASSIGN, "="},
+      {TknType::INT, "5"},
+      {TknType::SEMICOLON, ";"},
+      // let ten = 10;
+      {TknType::LET, "let"},
+      {TknType::IDENT, "ten"},
+      {TknType::ASSIGN, "="},
+      {TknType::INT, "10"},
+      {TknType::SEMICOLON, ";"},
+      // let add = fn(x, y) {
+      {TknType::LET, "let"},
+      {TknType::IDENT, "add"},
+      {TknType::ASSIGN, "="},
+      {TknType::FUNC, "fn"},
+      {TknType::LPAREN, "("},
+      {TknType::IDENT, "x"},
+      {TknType::COMMA, ","},
+      {TknType::IDENT, "y"},
+      {TknType::RPAREN, ")"},
+      {TknType::LBRACE, "{"},
+      // x + y;
+      {TknType::IDENT, "x"},
+      {TknType::PLUS, "+"},
+      {TknType::IDENT, "y"},
+      {TknType::SEMICOLON, ";"},
+      // };
+      {TknType::RBRACE, "}"},
+      {TknType::SEMICOLON, ";"},
+      // let result = add(five, ten);
+      {TknType::LET, "let"},
+      {TknType::IDENT, "result"},
+      {TknType::ASSIGN, "="},
+      {TknType::IDENT, "add"},
+      {TknType::LPAREN, "("},
+      {TknType::IDENT, "five"},
+      {TknType::COMMA, ","},
+      {TknType::IDENT, "ten"},
+      {TknType::RPAREN, ")"},
+      {TknType::SEMICOLON, ";"},
+      // !-/*5;
+      {TknType::BANG, "!"},
+      {TknType::MINUS, "-"},
+      {TknType::SLASH, "/"},
+      {TknType::ASTERISK, "*"},
+      {TknType::INT, "5"},
+      {TknType::SEMICOLON, ";"},
+      // 5 < 10 > 5;
+      {TknType::INT, "5"},
+      {TknType::LT, "<"},
+      {TknType::INT, "10"},
+      {TknType::GT, ">"},
+      {TknType::INT, "5"},
+      {TknType::SEMICOLON, ";"},
+      // EOF
+      {TknType::END_F, ""},
+  };
 
-    ASSERT_TRUE(compareExepectedAndReality(expected_tokens, input));
+  ASSERT_TRUE(compareExepectedAndReality(expected_tokens, input));
 }

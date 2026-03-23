@@ -1,9 +1,10 @@
 #pragma once
-#include <string_view>
 #include <string>
-#include "Lexer/Token.h"
+#include <string_view>
 #include <vector>
+
 #include "Lexer/States.h"
+#include "Lexer/Token.h"
 
 inline constexpr char NULL_CH = '\0';
 
@@ -17,7 +18,6 @@ class Lexer {
   bool debug_mode;
   std::vector<TokenStruct> tokens;
   LexerState ls;
-  
 
  public:
   Lexer(std::string input);
@@ -35,8 +35,6 @@ class Lexer {
   TokenStruct NextToken();
 
   TokenStruct newToken(TokenType tknType, std::string previous_literal);
-
-  
 };
 
 Lexer sourceStringLexer(std::string input);
