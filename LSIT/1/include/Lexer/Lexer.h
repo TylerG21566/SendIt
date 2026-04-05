@@ -20,7 +20,7 @@ class Lexer {
   LexerState ls;
 
  public:
-  Lexer(std::string input);
+  Lexer(std::string input, bool debug_mode_enabled);
 
   void printDebugVector();
 
@@ -37,4 +37,4 @@ class Lexer {
   TokenStruct newToken(TokenType tknType, std::string previous_literal);
 };
 
-Lexer sourceStringLexer(std::string input);
+Lexer sourceStringLexer(std::string input, bool dm);

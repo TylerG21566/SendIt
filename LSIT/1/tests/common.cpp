@@ -8,7 +8,7 @@
 
 bool compareExepectedAndReality(std::vector<TokenStruct> expected_tokens,
                                 std::string input) {
-  Lexer lexer = sourceStringLexer(input);
+  Lexer lexer = sourceStringLexer(input, false);
   TokenStruct tkn = lexer.NextToken();
   int idx = 0;
 

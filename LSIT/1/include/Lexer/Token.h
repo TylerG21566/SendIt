@@ -3,7 +3,7 @@
 #include <string_view>
 #include <unordered_map>
 
-using TokenType = std::string_view;
+using TokenType = std::string;
 
 namespace TknType {
 

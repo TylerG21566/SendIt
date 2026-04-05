@@ -33,7 +33,7 @@ bool LexerState::next_character_perserves_state(char ch) {
 
   if (state == TknType::INT) return isdigit(ch);
 
-  if (state == TknType::IDENT) return isalnum(ch);
+  if (state == TknType::IDENT) return isalnum(ch) || ch == '_';
 
   if (state == TknType::BANG || state == TknType::ASSIGN) return ch == '=';
 

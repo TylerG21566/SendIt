@@ -7,12 +7,12 @@
 
 #include "Lexer/Token.h"
 
-Lexer::Lexer(std::string input)
+Lexer::Lexer(std::string input, bool debug_mode_enabled)
     : input(std::move(input)),
       position(0),
       readPosition(0),
       size(this->input.size()),
-      debug_mode(true),
+      debug_mode(debug_mode_enabled),
       ls() {
   readChar();
   skipWhiteSpace();
@@ -124,4 +124,4 @@ TokenStruct Lexer::newToken(TokenType tknType, std::string previous_literal) {
   return TokenStruct{tknType, previous_literal};
 };
 
-Lexer sourceStringLexer(std::string input) { return Lexer(input); };
+Lexer sourceStringLexer(std::string input, bool dm) { return Lexer(input,dm); };
