@@ -1,0 +1,68 @@
+# Processing Let Statements
+
+## let parsing reqs
+
+variable bindings are statements of the following form:
+
+  let x = 5;
+  let y = 10;
+  let foobar = add(5, 5);
+  let barfoo = 5 * 5 / 10 + 18 - add(5, 5) + multiply(124);
+  let anotherName = barfoo;
+
+  let add = fn(a, b) {
+  return a + b;
+  };
+
+These all take the form of:
+
+  let <IDENT> = <EXPRESSION>;
+
+## Working CFG: v1
+
+// CORE STATEMENT SEQUENCE
+PROGRAM          -> STATEMENT EOF
+STATEMENT        -> LET_STATEMENT STATEMENT
+                 -> RETURN_STATEMENT STATEMENT
+                 -> E 
+LET_STATEMENT    -> let IDENT = EXPRESSION ;
+RETURN_STATEMENT -> return FORMULA;
+EXPRESSION       -> FORMULA | FUNC_DEF
+
+
+// OPERANDS AND OPERATORS
+FORMULA          -> ADD_EXPR
+ADD_EXPR         -> MUL_EXPR ADD_EXPR'
+ADD_EXPR'        -> (+|-) MUL_EXPR ADD_EXPR' | E
+MUL_EXPR         -> UNARY MUL_EXPR'
+MUL_EXPR'        -> (*|/) UNARY MUL_EXPR' | E
+UNARY            -> CALL
+CALL             -> IDENT CALL' | NUMBER | ( FORMULA )
+CALL'            -> ( ARG ) | E
+
+
+// FUNCTION INPUTS
+PARAMS_DEF       -> E
+                 -> IDENT PARAMS_DEF'
+PARAMS_DEF'      -> , IDENT PARAMS_DEF' | E
+ARG              -> E
+                 -> FORMULA ARG'
+ARG'             -> , FORMULA ARG' | E
+ 
+// FUNCTION DEFINITION
+MULTI_STATEMENT  -> STATEMENT MULTI_STATEMENT
+                 -> E
+FUNC_DEF         -> fn(PARAMS_DEEF){
+  MULTI_STATEMENT
+}
+
+## Errors
+EXPECTED_TKN_ERR: These happen when the parser expects a specific token but gets something else. Be specific about what you expected and what you got
+
+UNEXPECTED_TKN_ERR: When the parser encounters something that doesn't match any rule
+
+UNCLOSED_DELIMMITER_ERR: "Expected ')' to close '(' opened at line 1, col 9"
+
+EOF_ERR: When input ends unexpectedly
+
+

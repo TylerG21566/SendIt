@@ -17,6 +17,8 @@ class Lexer {
   int size;
   bool debug_mode;
   std::vector<TokenStruct> tokens;
+  double row;
+  double col;
   LexerState ls;
 
  public:

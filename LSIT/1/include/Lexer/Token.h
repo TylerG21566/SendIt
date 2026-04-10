@@ -31,6 +31,9 @@ constexpr TokenType PLUS = "+";
 constexpr TokenType SLASH = "/";
 constexpr TokenType ASTERISK = "*";
 constexpr TokenType MINUS = "-";
+constexpr TokenType AND = "AND";
+constexpr TokenType OR = "OR";
+constexpr TokenType NOT = "NOT";
 
 constexpr TokenType GT = ">";
 constexpr TokenType LT = "<";
@@ -56,6 +59,9 @@ inline const std::unordered_map<std::string, TokenType> KEYWORDS = {
     {"if", TknType::IF},
     {"else", TknType::ELSE},
     {"return", TknType::RETURN},
+    {"and", TknType::AND},
+    {"or", TknType::OR},
+    {"not", TknType::NOT},
 };
 
 inline const std::unordered_map<char, TokenType> SINGLE_CHAR_TOKENS = {
@@ -69,6 +75,7 @@ inline const std::unordered_map<char, TokenType> SINGLE_CHAR_TOKENS = {
 struct TokenStruct {
   TokenType type;
   std::string literal;
+  uint64_t row, col;
 
   auto operator<=>(const TokenStruct&) const = default;
 };

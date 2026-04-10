@@ -13,6 +13,8 @@ Lexer::Lexer(std::string input, bool debug_mode_enabled)
       readPosition(0),
       size(this->input.size()),
       debug_mode(debug_mode_enabled),
+      row(0),
+      col(0),
       ls() {
   readChar();
   skipWhiteSpace();
@@ -49,6 +51,13 @@ int Lexer::readChar() {
     ch = NULL_CH;
   else
     ch = input.at(readPosition);
+  
+  if (ch == '\n'){
+    row ++;
+    col = 0;
+  } else {
+    col ++;
+  }
 
   position = readPosition;
   readPosition++;
@@ -58,6 +67,9 @@ int Lexer::readChar() {
 TokenStruct Lexer::NextToken() {
   TokenStruct tok;
   TokenType tt;
+
+  tok.row = row;
+  tok.col = col;
 
   std::string working_literal = "";
   bool new_token_needed = false;
@@ -114,8 +126,7 @@ TokenStruct Lexer::NextToken() {
     tt = TknType::ILLEGAL;
 
   tok = newToken(tt, working_literal);
-
-  if (debug_mode) tokens.push_back(tok);
+  tokens.push_back(tok);
 
   return tok;
 }
