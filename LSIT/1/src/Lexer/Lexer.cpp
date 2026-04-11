@@ -51,12 +51,12 @@ int Lexer::readChar() {
     ch = NULL_CH;
   else
     ch = input.at(readPosition);
-  
-  if (ch == '\n'){
-    row ++;
+
+  if (ch == '\n') {
+    row++;
     col = 0;
   } else {
-    col ++;
+    col++;
   }
 
   position = readPosition;
@@ -135,4 +135,6 @@ TokenStruct Lexer::newToken(TokenType tknType, std::string previous_literal) {
   return TokenStruct{tknType, previous_literal};
 };
 
-Lexer sourceStringLexer(std::string input, bool dm) { return Lexer(input,dm); };
+Lexer sourceStringLexer(std::string input, bool dm) {
+  return Lexer(input, dm);
+};

@@ -34,9 +34,8 @@ EXPRESSION       -> FORMULA | FUNC_DEF
 FORMULA          -> ADD_EXPR
 ADD_EXPR         -> MUL_EXPR ADD_EXPR'
 ADD_EXPR'        -> (+|-) MUL_EXPR ADD_EXPR' | E
-MUL_EXPR         -> UNARY MUL_EXPR'
-MUL_EXPR'        -> (*|/) UNARY MUL_EXPR' | E
-UNARY            -> CALL
+MUL_EXPR         -> CALL MUL_EXPR'
+MUL_EXPR'        -> (*|/) CALL MUL_EXPR' | E
 CALL             -> IDENT CALL' | NUMBER | ( FORMULA )
 CALL'            -> ( ARG ) | E
 

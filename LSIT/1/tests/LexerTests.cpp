@@ -6,7 +6,7 @@
 
 #include "Lexer/Lexer.h"
 #include "Lexer/Token.h"
-#include "Tests/common.h"
+#include "TestHelp/common.h"
 
 TEST(LexerTests, Lexer_sanity_check_Test) {
   std::string input = "=+(){},;";

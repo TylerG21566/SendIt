@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "Lexer/Lexer.h"
 #include "Lexer/Token.h"
@@ -16,18 +17,19 @@
 #define T_CONVERT(literal) std::make_unique<Ast::Terminal>(literal)
 
 #define CMP_CUR(TokType) cur.type == TokType
-#define CMP_LA(TokType) la.type == TokType
 
 #define STR_SET(NT) \
-  std::string Ast::NT::toString() { return "<" #NT ">"; }
+  std::string Ast::NT::toString() { return "" #NT ""; }
 
 #define GET_TOKENS()               \
-  auto cur = ph.getCurrentToken(); \
-  auto la = ph.getLookAheadToken()
+  auto cur = ph.getCurrentToken();
+
 #define NEXT_TOKENS()         \
   ph.nextToken();             \
-  cur = ph.getCurrentToken(); \
-  la = ph.getLookAheadToken()
+  cur = ph.getCurrentToken();
+
+#define GUARD() \
+  if (ph.hasError()) return
 
 enum ParsingErrorEnum {
   EXPECTED_TKN_ERR,  // These happen when the parser expects a specific token
@@ -51,17 +53,15 @@ struct ParsingError : TokenStruct {
 };
 
 struct ParserHead {
-  std::deque<TokenStruct> tokens;
+  std::vector<TokenStruct> tokens;
+  size_t pos = 0;
   std::vector<ParsingError> errors;
   TokenStruct curTkn;
-  TokenStruct lookahead;
 
   ParserHead(std::vector<TokenStruct> TokenVector);
   void nextToken();
 
   TokenStruct getCurrentToken() { return curTkn; }
-
-  TokenStruct getLookAheadToken() { return lookahead; }
 
   bool hasError() { return !(errors.empty()); }
 
@@ -85,27 +85,27 @@ struct Node {
 
   bool isTerminal() const { return children.empty(); }
 
-  void add(std::unique_ptr<Node> node) { childrenToBuild.push_back(node); }
+  void add(std::unique_ptr<Node> node) { childrenToBuild.push_back(std::move(node)); }
 
   void buildChildren(ParserHead& ph) {
     value = this->toString();
     for (auto& child : childrenToBuild) {
-        child->match(ph);
-        if (ph.hasError()) return;
+      child->match(ph);
+      if (ph.hasError()) return;
     }
     children.insert(children.end(),
-        std::make_move_iterator(childrenToBuild.begin()),
-        std::make_move_iterator(childrenToBuild.end()));
+                    std::make_move_iterator(childrenToBuild.begin()),
+                    std::make_move_iterator(childrenToBuild.end()));
     childrenToBuild.clear();
   }
 
   void expect(ParserHead& ph, std::string type) {
     if (ph.curTkn.type != type) {
-        ph.addError(ph.curTkn, EXPECTED_TKN_ERR);
-        return;
+      ph.addError(ph.curTkn, EXPECTED_TKN_ERR);
+      return;
     }
     ph.nextToken();
-}
+  }
 };
 
 /*
@@ -190,3 +190,24 @@ struct Terminal : Node {
 };
 
 };  // namespace Ast
+
+class Parser {
+  std::unique_ptr<Ast::Node> head;
+  ParserHead ph;
+
+ public:
+  Parser(std::vector<TokenStruct> ts);
+  void build();
+  Ast::Node* getAst();
+  std::vector<std::string> IndentDisplay();
+  std::string flatDisplay();
+  bool hasError(){return ph.hasError();};
+  const std::vector<ParsingError>& getErrors() { return ph.getErrors(); }
+  std::string displayErrors(){
+    std::string s = "";
+    for (auto e : getErrors()){
+      s += e.errorType ;
+    }
+    return s;
+  };
+};
