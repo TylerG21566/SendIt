@@ -41,8 +41,8 @@ constexpr TokenType BANG = "!";
 
 constexpr TokenType NEQ = "!=";
 constexpr TokenType EQ = "==";
-// constexpr TokenType GTE = ">=";
-// constexpr TokenType LTE = "<=";
+//constexpr TokenType GTE = ">=";
+//constexpr TokenType LTE = "<=";
 
 // DELIMMITER
 constexpr TokenType COMMA = ",";
@@ -51,6 +51,10 @@ constexpr TokenType LPAREN = "(";
 constexpr TokenType RPAREN = ")";
 constexpr TokenType LBRACE = "{";
 constexpr TokenType RBRACE = "}";
+
+// BOOLEAN
+constexpr TokenType TRUE = "true";
+constexpr TokenType FALSE = "false";
 }  // namespace TknType
 
 inline const std::unordered_map<std::string, TokenType> KEYWORDS = {
@@ -62,6 +66,8 @@ inline const std::unordered_map<std::string, TokenType> KEYWORDS = {
     {"and", TknType::AND},
     {"or", TknType::OR},
     {"not", TknType::NOT},
+    {"true", TknType::TRUE},
+    {"false", TknType::FALSE}
 };
 
 inline const std::unordered_map<char, TokenType> SINGLE_CHAR_TOKENS = {

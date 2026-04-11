@@ -1,10 +1,10 @@
 #pragma once
 
 #include <deque>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "Lexer/Lexer.h"
 #include "Lexer/Token.h"
@@ -12,6 +12,11 @@
 #define AST_NODE_IMPL              \
   std::string toString() override; \
   void match(ParserHead& ph) override;
+
+#define REGISTER(Non_Terminal) \
+  struct Non_Terminal : Node { \
+    AST_NODE_IMPL              \
+  };
 
 #define NT_CONVERT(type) std::make_unique<Ast::type>()
 #define T_CONVERT(literal) std::make_unique<Ast::Terminal>(literal)
@@ -21,11 +26,10 @@
 #define STR_SET(NT) \
   std::string Ast::NT::toString() { return "" #NT ""; }
 
-#define GET_TOKENS()               \
-  auto cur = ph.getCurrentToken();
+#define GET_TOKENS() auto cur = ph.getCurrentToken();
 
-#define NEXT_TOKENS()         \
-  ph.nextToken();             \
+#define NEXT_TOKENS() \
+  ph.nextToken();     \
   cur = ph.getCurrentToken();
 
 #define GUARD() \
@@ -85,26 +89,16 @@ struct Node {
 
   bool isTerminal() const { return children.empty(); }
 
-  void add(std::unique_ptr<Node> node) { childrenToBuild.push_back(std::move(node)); }
-
-  void buildChildren(ParserHead& ph) {
-    value = this->toString();
-    for (auto& child : childrenToBuild) {
-      child->match(ph);
-      if (ph.hasError()) return;
-    }
-    children.insert(children.end(),
-                    std::make_move_iterator(childrenToBuild.begin()),
-                    std::make_move_iterator(childrenToBuild.end()));
-    childrenToBuild.clear();
-  }
-
   void expect(ParserHead& ph, std::string type) {
     if (ph.curTkn.type != type) {
       ph.addError(ph.curTkn, EXPECTED_TKN_ERR);
       return;
     }
     ph.nextToken();
+  }
+
+  void throw_error(ParserHead& ph){
+    ph.addError(ph.curTkn, EXPECTED_TKN_ERR);
   }
 };
 
@@ -113,75 +107,38 @@ Non-Terminals
 */
 
 // CORE STATEMENT SEQUENCE
-struct Program : Node {
-  AST_NODE_IMPL
-};
-struct Statement : Node {
-  AST_NODE_IMPL
-};
-struct LetStatement : Node {
-  AST_NODE_IMPL
-};
-struct ReturnStatement : Node {
-  AST_NODE_IMPL
-};
-struct Expression : Node {
-  AST_NODE_IMPL
-};
+REGISTER(Program)
+REGISTER(Statement)
+REGISTER(LetStatement)
+REGISTER(ReturnStatement)
+REGISTER(Expression)
+REGISTER(If)
+REGISTER(ThenElse)
 
 // OPERANDS AND OPERATORS
-struct Ident : Node {
-  AST_NODE_IMPL
-};
-struct Number : Node {
-  AST_NODE_IMPL
-};
-struct Formula : Node {
-  AST_NODE_IMPL
-};
-struct AddExpr : Node {
-  AST_NODE_IMPL
-};
-struct AddExpr2 : Node {
-  AST_NODE_IMPL
-};
-struct MulExpr : Node {
-  AST_NODE_IMPL
-};
-struct MulExpr2 : Node {
-  AST_NODE_IMPL
-};
-struct Unary : Node {
-  AST_NODE_IMPL
-};
-struct Call : Node {
-  AST_NODE_IMPL
-};
-struct Call2 : Node {
-  AST_NODE_IMPL
-};
+REGISTER(ValueExpression)
+REGISTER(Compare)
+REGISTER(Compare2)
+REGISTER(OrExpr)
+REGISTER(OrExpr2)
+REGISTER(AndExpr)
+REGISTER(AndExpr2)
+REGISTER(NotExpr)
+REGISTER(AddExpr)
+REGISTER(AddExpr2)
+REGISTER(MulExpr)
+REGISTER(MulExpr2)
+REGISTER(Call)
+REGISTER(Call2)
+REGISTER(Atom)
 
 // FUNCTION INPUTS
-struct ParamsDef : Node {
-  AST_NODE_IMPL
-};
-struct ParamsDef2 : Node {
-  AST_NODE_IMPL
-};
-struct Arg : Node {
-  AST_NODE_IMPL
-};
-struct Arg2 : Node {
-  AST_NODE_IMPL
-};
-
-// FUNCTION DEFINITION
-struct MultiStatement : Node {
-  AST_NODE_IMPL
-};
-struct FuncDef : Node {
-  AST_NODE_IMPL
-};
+REGISTER(ParamsDef)
+REGISTER(ParamsDef2)
+REGISTER(Arg)
+REGISTER(Arg2)
+REGISTER(MultiStatement)
+REGISTER(FuncDef)
 
 // Terminal
 struct Terminal : Node {
@@ -201,13 +158,26 @@ class Parser {
   Ast::Node* getAst();
   std::vector<std::string> IndentDisplay();
   std::string flatDisplay();
-  bool hasError(){return ph.hasError();};
+  bool hasError() { return ph.hasError(); };
   const std::vector<ParsingError>& getErrors() { return ph.getErrors(); }
-  std::string displayErrors(){
+  std::string displayErrors() {
     std::string s = "";
-    for (auto e : getErrors()){
-      s += e.errorType ;
+    for (auto e : getErrors()) {
+      s += e.errorType;
     }
     return s;
   };
 };
+
+inline bool isAtomic(TokenType tt){
+  
+  return tt == TknType::IDENT || tt == TknType::INT ||
+             tt == TknType::LPAREN || tt == TknType::TRUE ||
+             tt == TknType::FALSE;
+}
+
+inline bool isComparison(TokenType tt){
+  
+  return tt == TknType::EQ || tt == TknType::NEQ ||
+             tt == TknType::GT || tt == TknType::LT;
+}

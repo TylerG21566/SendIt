@@ -132,7 +132,7 @@ TokenStruct Lexer::NextToken() {
 }
 
 TokenStruct Lexer::newToken(TokenType tknType, std::string previous_literal) {
-  return TokenStruct{tknType, previous_literal};
+  return TokenStruct{tknType, previous_literal, 0, 0};
 };
 
 Lexer sourceStringLexer(std::string input, bool dm) {

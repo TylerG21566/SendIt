@@ -265,7 +265,7 @@ return false;
       {TknType::LBRACE, "{"},
       // return true;
       {TknType::RETURN, "return"},
-      {TknType::IDENT, "true"},
+      {TknType::TRUE, "true"},
       {TknType::SEMICOLON, ";"},
       // } else {
       {TknType::RBRACE, "}"},
@@ -273,7 +273,7 @@ return false;
       {TknType::LBRACE, "{"},
       // return false;
       {TknType::RETURN, "return"},
-      {TknType::IDENT, "false"},
+      {TknType::FALSE, "false"},
       {TknType::SEMICOLON, ";"},
       // }
       {TknType::RBRACE, "}"},

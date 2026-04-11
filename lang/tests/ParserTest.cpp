@@ -14,11 +14,9 @@
 TEST(ParserTests, Parser_let_integer_assignment) {
   std::string input = "let x = 5;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call 5))))))))";
-
-  auto tokens = lexInput(input);
-  Parser parser(tokens);
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call "
+      "5))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -26,11 +24,9 @@ TEST(ParserTests, Parser_let_integer_assignment) {
 TEST(ParserTests, Parser_let_addition) {
   std::string input = "let x = 1 + 2;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call 1)) (AddExpr2 + (MulExpr (Call 2)))))))))";
-
-  auto tokens = lexInput(input);
-  Parser parser(tokens);
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 1)) "
+      "(AddExpr2 + (MulExpr (Call 2)))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -38,9 +34,9 @@ TEST(ParserTests, Parser_let_addition) {
 TEST(ParserTests, Parser_let_multiplication) {
   std::string input = "let x = 1 * 2;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call 1) (MulExpr2 * (Call 2)))))))))";
-
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 1) "
+      "(MulExpr2 * (Call 2)))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -48,10 +44,11 @@ TEST(ParserTests, Parser_let_multiplication) {
 TEST(ParserTests, Parser_let_function_call) {
   std::string input = "let x = foo(1, 2);";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call foo (Arg (Formula (AddExpr (MulExpr (Call 1)))) (Formula "
-      "(AddExpr (MulExpr (Call 2)))))))))))))";
-
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call foo "
+      "(Arg (ValueExpression (Compare (OrExpr (AndExpr (NotExpr (AddExpr "
+      "(MulExpr (Call 1)))))))) (ValueExpression (Compare (OrExpr (AndExpr "
+      "(NotExpr (AddExpr (MulExpr (Call 2)))))))))))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -59,10 +56,10 @@ TEST(ParserTests, Parser_let_function_call) {
 TEST(ParserTests, Parser_let_function_definition) {
   std::string input = "let f = fn(x, y) { return x + y; };";
   std::string expected =
-      "(Program (Statement (LetStatement f (Expression (FuncDef (ParamsDef x "
-      "y) (MultiStatement (Statement (ReturnStatement (Formula (AddExpr "
-      "(MulExpr (Call x)) (AddExpr2 + (MulExpr (Call y)))))))))))))";
-
+      "(Program (Statement (LetStatement f (Expression (FuncDef (ParamsDef "
+      "x y) (MultiStatement (Statement (ReturnStatement (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call x)) "
+      "(AddExpr2 + (MulExpr (Call y)))))))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -70,19 +67,16 @@ TEST(ParserTests, Parser_let_function_definition) {
 TEST(ParserTests, Parser_return_integer) {
   std::string input = "return 42;";
   std::string expected =
-      "(Program (Statement (ReturnStatement (Formula (AddExpr (MulExpr (Call "
-      "42)))))))";
-
+      "(Program (Statement (ReturnStatement (ValueExpression (Compare "
+      "(OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 42)))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
 // return return;
 TEST(ParserTests, Parser_return_return_error) {
   std::string input = "return return;";
-
   auto tokens = lexInput(input);
   Parser parser(tokens);
-
   EXPECT_TRUE(compareExepectedAndRealityParserExpectingError(parser))
       << "Errors:  " << parser.displayErrors() << std::endl;
 }
@@ -91,9 +85,10 @@ TEST(ParserTests, Parser_return_return_error) {
 TEST(ParserTests, Parser_multiple_let_statements) {
   std::string input = "let x = 1; let y = 2;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call 1)))))) (LetStatement y (Expression (Formula (AddExpr "
-      "(MulExpr (Call 2))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 1)))))))))) "
+      "(LetStatement y (Expression (ValueExpression (Compare (OrExpr "
+      "(AndExpr (NotExpr (AddExpr (MulExpr (Call 2))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -101,8 +96,9 @@ TEST(ParserTests, Parser_multiple_let_statements) {
 TEST(ParserTests, Parser_let_subtraction) {
   std::string input = "let x = 5 - 3;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call 5)) (AddExpr2 - (MulExpr (Call 3)))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 5)) "
+      "(AddExpr2 - (MulExpr (Call 3)))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -110,8 +106,9 @@ TEST(ParserTests, Parser_let_subtraction) {
 TEST(ParserTests, Parser_let_division) {
   std::string input = "let x = 10 / 2;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call 10) (MulExpr2 / (Call 2)))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 10) "
+      "(MulExpr2 / (Call 2)))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -119,9 +116,9 @@ TEST(ParserTests, Parser_let_division) {
 TEST(ParserTests, Parser_precedence_mul_add) {
   std::string input = "let x = 1 + 2 * 3;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call 1)) (AddExpr2 + (MulExpr (Call 2) (MulExpr2 * (Call "
-      "3))))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 1)) "
+      "(AddExpr2 + (MulExpr (Call 2) (MulExpr2 * (Call 3))))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -129,9 +126,11 @@ TEST(ParserTests, Parser_precedence_mul_add) {
 TEST(ParserTests, Parser_parenthesized_expression) {
   std::string input = "let x = (1 + 2) * 3;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call (Formula (AddExpr (MulExpr (Call 1)) (AddExpr2 + "
-      "(MulExpr (Call 2)))))) (MulExpr2 * (Call 3)))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call "
+      "(ValueExpression (Compare (OrExpr (AndExpr (NotExpr (AddExpr "
+      "(MulExpr (Call 1)) (AddExpr2 + (MulExpr (Call 2)))))))))) "
+      "(MulExpr2 * (Call 3)))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -139,9 +138,10 @@ TEST(ParserTests, Parser_parenthesized_expression) {
 TEST(ParserTests, Parser_chained_addition) {
   std::string input = "let x = 1 + 2 + 3;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call 1)) (AddExpr2 + (MulExpr (Call 2)) (AddExpr2 + "
-      "(MulExpr (Call 3))))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 1)) "
+      "(AddExpr2 + (MulExpr (Call 2)) (AddExpr2 + (MulExpr "
+      "(Call 3))))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -149,8 +149,9 @@ TEST(ParserTests, Parser_chained_addition) {
 TEST(ParserTests, Parser_chained_multiplication) {
   std::string input = "let x = 2 * 3 * 4;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call 2) (MulExpr2 * (Call 3) (MulExpr2 * (Call 4))))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 2) "
+      "(MulExpr2 * (Call 3) (MulExpr2 * (Call 4))))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -158,8 +159,9 @@ TEST(ParserTests, Parser_chained_multiplication) {
 TEST(ParserTests, Parser_let_ident_assignment) {
   std::string input = "let x = y;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call y))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call "
+      "y))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -168,8 +170,9 @@ TEST(ParserTests, Parser_function_no_params) {
   std::string input = "let f = fn() { return 1; };";
   std::string expected =
       "(Program (Statement (LetStatement f (Expression (FuncDef ParamsDef "
-      "(MultiStatement (Statement (ReturnStatement (Formula (AddExpr "
-      "(MulExpr (Call 1))))))))))))";
+      "(MultiStatement (Statement (ReturnStatement (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr "
+      "(Call 1))))))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -177,8 +180,9 @@ TEST(ParserTests, Parser_function_no_params) {
 TEST(ParserTests, Parser_call_no_args) {
   std::string input = "let x = foo();";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call foo Arg))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call "
+      "foo Arg))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -186,9 +190,11 @@ TEST(ParserTests, Parser_call_no_args) {
 TEST(ParserTests, Parser_nested_function_call) {
   std::string input = "let x = foo(bar(1));";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call foo (Arg (Formula (AddExpr (MulExpr (Call bar (Arg "
-      "(Formula (AddExpr (MulExpr (Call 1))))))))))))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call foo "
+      "(Arg (ValueExpression (Compare (OrExpr (AndExpr (NotExpr (AddExpr "
+      "(MulExpr (Call bar (Arg (ValueExpression (Compare (OrExpr (AndExpr "
+      "(NotExpr (AddExpr (MulExpr (Call 1))))))))))))))))))))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -196,9 +202,11 @@ TEST(ParserTests, Parser_nested_function_call) {
 TEST(ParserTests, Parser_expression_in_arg) {
   std::string input = "let x = foo(1 + 2);";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call foo (Arg (Formula (AddExpr (MulExpr (Call 1)) "
-      "(AddExpr2 + (MulExpr (Call 2))))))))))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call foo "
+      "(Arg (ValueExpression (Compare (OrExpr (AndExpr (NotExpr (AddExpr "
+      "(MulExpr (Call 1)) (AddExpr2 + (MulExpr "
+      "(Call 2))))))))))))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -206,8 +214,9 @@ TEST(ParserTests, Parser_expression_in_arg) {
 TEST(ParserTests, Parser_return_expression) {
   std::string input = "return 1 + 2;";
   std::string expected =
-      "(Program (Statement (ReturnStatement (Formula (AddExpr (MulExpr "
-      "(Call 1)) (AddExpr2 + (MulExpr (Call 2))))))))";
+      "(Program (Statement (ReturnStatement (ValueExpression (Compare "
+      "(OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 1)) (AddExpr2 "
+      "+ (MulExpr (Call 2))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -215,9 +224,10 @@ TEST(ParserTests, Parser_return_expression) {
 TEST(ParserTests, Parser_let_then_return) {
   std::string input = "let x = 5; return x;";
   std::string expected =
-      "(Program (Statement (LetStatement x (Expression (Formula (AddExpr "
-      "(MulExpr (Call 5)))))) (ReturnStatement (Formula (AddExpr (MulExpr "
-      "(Call x)))))))";
+      "(Program (Statement (LetStatement x (Expression (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call 5)))))))))) "
+      "(ReturnStatement (ValueExpression (Compare (OrExpr (AndExpr "
+      "(NotExpr (AddExpr (MulExpr (Call x)))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 
@@ -226,9 +236,11 @@ TEST(ParserTests, Parser_function_multi_statement_body) {
   std::string input = "let f = fn(x) { let y = 1; return x + y; };";
   std::string expected =
       "(Program (Statement (LetStatement f (Expression (FuncDef (ParamsDef "
-      "x) (MultiStatement (Statement (LetStatement y (Expression (Formula "
-      "(AddExpr (MulExpr (Call 1)))))) (ReturnStatement (Formula (AddExpr "
-      "(MulExpr (Call x)) (AddExpr2 + (MulExpr (Call y)))))))))))))";
+      "x) (MultiStatement (Statement (LetStatement y (Expression "
+      "(ValueExpression (Compare (OrExpr (AndExpr (NotExpr (AddExpr "
+      "(MulExpr (Call 1)))))))))) (ReturnStatement (ValueExpression "
+      "(Compare (OrExpr (AndExpr (NotExpr (AddExpr (MulExpr (Call x)) "
+      "(AddExpr2 + (MulExpr (Call y)))))))))))))))))";
   ASSERT_TRUE(compareExepectedAndRealityParser(input, expected));
 }
 

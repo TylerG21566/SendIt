@@ -64,4 +64,50 @@ UNCLOSED_DELIMMITER_ERR: "Expected ')' to close '(' opened at line 1, col 9"
 
 EOF_ERR: When input ends unexpectedly
 
+## Working CFG: v2
+
+// CORE STATEMENT SEQUENCE
+PROGRAM          -> STATEMENT EOF
+STATEMENT        -> LET_STATEMENT STATEMENT
+                 -> RETURN_STATEMENT STATEMENT
+                 -> IF_THEN_ELSE STATEMENT
+                 -> E 
+LET_STATEMENT    -> let IDENT = EXPRESSION ;
+RETURN_STATEMENT -> return VALUE_EXPRESSION;
+EXPRESSION       -> VALUE_EXPRESSION | FUNC_DEF
+
+// if then else structure
+IF               -> if ( VALUE_EXPRESSION ) { MULTI_STATEMENT } THEN_ELSE;
+THEN_ELSE        -> else { MULTI_STATEMENT } | E
+
+// Math and Boolean Precedence Chain
+VALUE_EXPRESSION -> COMPARE
+COMPARE          -> OR_EXPR COMPARE' 
+COMPARE'         -> (==|!=|>|<) OR_EXPR | E
+OR_EXPR          -> AND_EXPR OR_EXPR'
+OR_EXPR'         -> or AND_EXPR OR_EXPR' | E
+AND_EXPR         -> NOT_EXPR AND_EXPR'
+AND_EXPR'        -> and NOT_EXPR AND_EXPR' | E
+NOT_EXPR         -> not NOT_EXPR | ADD_EXPR
+ADD_EXPR         -> MUL_EXPR ADD_EXPR'
+ADD_EXPR'        -> (+|-) MUL_EXPR ADD_EXPR' | E
+MUL_EXPR         -> CALL MUL_EXPR'
+MUL_EXPR'        -> (*|/) CALL MUL_EXPR' | E
+CALL             -> IDENT CALL' | NUMBER | true | false | ( VALUE_EXPRESSION )
+CALL'            -> ( ARG ) | E
+
+// FUNCTION INPUTS
+PARAMS_DEF       -> E
+                 -> IDENT PARAMS_DEF'
+PARAMS_DEF'      -> , IDENT PARAMS_DEF' | E
+ARG              -> E
+                 -> VALUE_EXPRESSION ARG'
+ARG'             -> , VALUE_EXPRESSION ARG' | E
+ 
+// FUNCTION DEFINITION
+MULTI_STATEMENT  -> STATEMENT MULTI_STATEMENT
+                 -> E
+FUNC_DEF         -> fn(PARAMS_DEEF){
+  MULTI_STATEMENT
+}
 
