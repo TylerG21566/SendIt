@@ -25,7 +25,7 @@ void LexerState::update_state(char ch) {
 };
 
 /* decide whether next character forces a token to be emmitted */
-bool LexerState::next_character_perserves_state(char ch) {
+bool LexerState::next_character_perserves_state(char ch, int length) {
   auto it = SINGLE_CHAR_TOKENS.find(ch);
   // WHITESPACE always emmits token
   // gauranteed 1 character length Token match
@@ -35,7 +35,7 @@ bool LexerState::next_character_perserves_state(char ch) {
 
   if (state == TknType::IDENT) return isalnum(ch) || ch == '_';
 
-  if (state == TknType::BANG || state == TknType::ASSIGN) return ch == '=';
+  if ((state == TknType::BANG || state == TknType::ASSIGN) && length < 2) return ch == '=';
 
   // ILLEGAL character
   return false;

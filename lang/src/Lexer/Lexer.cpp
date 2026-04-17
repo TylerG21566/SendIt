@@ -83,8 +83,9 @@ TokenStruct Lexer::NextToken() {
       std::cout << position << " " << readPosition << " " << ch << " "
                 << this->peek() << std::endl;
 
-    new_token_needed = !ls.next_character_perserves_state(this->peek());
     working_literal += ch;
+    new_token_needed = !ls.next_character_perserves_state(this->peek(), working_literal.size());
+    
     readChar();
   }
 

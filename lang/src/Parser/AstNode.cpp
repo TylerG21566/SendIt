@@ -1,11 +1,10 @@
-#include "Parser/AstNode.h"
-
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "Lexer/Lexer.h"
 #include "Lexer/Token.h"
+#include "Parser/AstNode.h"
 
 Parser::Parser(std::vector<TokenStruct> ts)
     : head(std::make_unique<Ast::Program>()), ph(ts) {}

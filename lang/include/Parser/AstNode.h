@@ -35,6 +35,9 @@
 #define GUARD() \
   if (ph.hasError()) return
 
+#define ENUM_TO_STRING_CONVERSION(err) \
+case err: return #err
+
 enum ParsingErrorEnum {
   EXPECTED_TKN_ERR,  // These happen when the parser expects a specific token
                      // but gets something else. Be specific about what you
@@ -48,6 +51,16 @@ enum ParsingErrorEnum {
 
   EOF_ERR,  // When input ends unexpectedly
 };
+
+inline std::string parsingErrorEnumToString(ParsingErrorEnum err){
+  switch(err){
+    ENUM_TO_STRING_CONVERSION(EXPECTED_TKN_ERR);
+    ENUM_TO_STRING_CONVERSION(UNEXPECTED_TKN_ERR);
+    ENUM_TO_STRING_CONVERSION(UNCLOSED_DELIMMITER_ERR);
+    ENUM_TO_STRING_CONVERSION(EOF_ERR);
+    default: return "";
+  }
+}
 
 struct ParsingError : TokenStruct {
   ParsingErrorEnum errorType;
