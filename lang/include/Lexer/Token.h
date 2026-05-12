@@ -55,6 +55,7 @@ constexpr TokenType RBRACE = "}";
 // BOOLEAN
 constexpr TokenType TRUE = "true";
 constexpr TokenType FALSE = "false";
+constexpr TokenType NONE = "None";
 }  // namespace TknType
 
 inline const std::unordered_map<std::string, TokenType> KEYWORDS = {
@@ -67,7 +68,8 @@ inline const std::unordered_map<std::string, TokenType> KEYWORDS = {
     {"or", TknType::OR},
     {"not", TknType::NOT},
     {"true", TknType::TRUE},
-    {"false", TknType::FALSE}
+    {"false", TknType::FALSE},
+    {"None", TknType::NONE},
 };
 
 inline const std::unordered_map<char, TokenType> SINGLE_CHAR_TOKENS = {
@@ -79,9 +81,14 @@ inline const std::unordered_map<char, TokenType> SINGLE_CHAR_TOKENS = {
 };
 
 struct TokenStruct {
-  TokenType type;
-  std::string literal;
-  uint64_t row, col;
+    TokenType type;
+    std::string literal;
+    uint64_t row, col;
 
-  auto operator<=>(const TokenStruct&) const = default;
+    bool operator==(const TokenStruct& other) const {
+        return type == other.type && literal == other.literal;
+    }
+    bool operator!=(const TokenStruct& other) const {
+        return !(*this == other);
+    }
 };

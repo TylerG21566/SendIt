@@ -1,10 +1,11 @@
+#include "Parser/AstNode.h"
+
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "Lexer/Lexer.h"
 #include "Lexer/Token.h"
-#include "Parser/AstNode.h"
 
 Parser::Parser(std::vector<TokenStruct> ts)
     : head(std::make_unique<Ast::Program>()), ph(ts) {}
@@ -102,25 +103,42 @@ STR_SET(Statement)
 void Ast::Statement::match(ParserHead& ph) {
   GUARD();
 
-  while (ph.curTkn.type == TknType::LET || ph.curTkn.type == TknType::RETURN
-  || ph.curTkn.type == TknType::IF) {
+  while (ph.curTkn.type == TknType::LET || ph.curTkn.type == TknType::RETURN ||
+         ph.curTkn.type == TknType::IF || ph.curTkn.type == TknType::IDENT) {
     if (ph.curTkn.type == TknType::LET) {
       auto let = NT_CONVERT(LetStatement);
       let->match(ph);
       GUARD();
       children.push_back(std::move(let));
-    } 
-    else if (ph.curTkn.type == TknType::IF) {
+    } else if (ph.curTkn.type == TknType::IF) {
       auto fi = NT_CONVERT(If);
       fi->match(ph);
       GUARD();
       children.push_back(std::move(fi));
-    }
-    else {
+    } else if (ph.curTkn.type == TknType::RETURN) {
       auto ret = NT_CONVERT(ReturnStatement);
       ret->match(ph);
       GUARD();
       children.push_back(std::move(ret));
+    }
+    // Statement -> IDENT CALL';
+    else if (ph.curTkn.type == TknType::IDENT) {
+      auto ident = T_CONVERT(ph.curTkn.literal);
+      ph.nextToken();
+
+      // CALL' -> ( ARG ) | E
+
+      expect(ph, TknType::LPAREN);
+
+      auto args = NT_CONVERT(Arg);
+      args->match(ph);
+      GUARD();
+
+      expect(ph, TknType::RPAREN);
+      expect(ph, TknType::SEMICOLON);
+
+      children.push_back(std::move(ident));
+      children.push_back(std::move(args));
     }
   }
 }
@@ -336,7 +354,7 @@ void Ast::AndExpr::match(ParserHead& ph) {
   children.push_back(std::move(not_expr));
 
   if (CMP_CUR(TknType::AND)) {
-    auto and_expr2 = NT_CONVERT(OrExpr2);
+    auto and_expr2 = NT_CONVERT(AndExpr2);
     and_expr2->match(ph);
     GUARD();
     children.push_back(std::move(and_expr2));
@@ -370,7 +388,6 @@ void Ast::NotExpr::match(ParserHead& ph) {
   GUARD();
 
   if (CMP_CUR(TknType::NOT)) {
-    if (CMP_CUR(TknType::NOT)) {
       auto op = T_CONVERT("not");
       ph.nextToken();
       auto inner = NT_CONVERT(NotExpr);
@@ -378,7 +395,6 @@ void Ast::NotExpr::match(ParserHead& ph) {
       GUARD();
       children.push_back(std::move(op));
       children.push_back(std::move(inner));
-    }
   } else {
     auto add_expr = NT_CONVERT(AddExpr);
     add_expr->match(ph);
@@ -472,7 +488,7 @@ void Ast::MulExpr2::match(ParserHead& ph) {
   }
 }
 
-// CALL  -> IDENT CALL' | NUMBER | true | false | ( VALUE_EXPRESSION )
+// CALL  -> IDENT CALL' | NUMBER | true | false | ( VALUE_EXPRESSION ) | None
 // CALL' -> ( ARG ) | E
 STR_SET(Call)
 void Ast::Call::match(ParserHead& ph) {
@@ -514,6 +530,11 @@ void Ast::Call::match(ParserHead& ph) {
     auto f = T_CONVERT(ph.curTkn.literal);
     expect(ph, TknType::FALSE);
     children.push_back(std::move(f));
+
+  } else if (CMP_CUR(TknType::NONE)) {
+    auto n = T_CONVERT(ph.curTkn.literal);
+    expect(ph, TknType::NONE);
+    children.push_back(std::move(n));
 
   } else if (CMP_CUR(TknType::LPAREN)) {
     expect(ph, TknType::LPAREN);  // consume (

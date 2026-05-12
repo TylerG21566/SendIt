@@ -12,30 +12,34 @@ bool compareExepectedAndReality(std::vector<TokenStruct> expected_tokens,
   Lexer lexer = sourceStringLexer(input, false);
   TokenStruct tkn = lexer.NextToken();
   int idx = 0;
-
-  std::cout << input << std::endl;
   while (tkn.type != TknType::END_F) {
-    // check tokens match
-    if (idx == expected_tokens.size()) {
-      lexer.printDebugVector();
+    if (idx >= expected_tokens.size()) {
+      std::cerr << "TOO MANY TOKENS at idx " << idx << std::endl;
       return false;
     }
-    // if they dont assert
+    std::cerr << "idx=" << idx
+              << " expected_type=" << expected_tokens.at(idx).type
+              << " expected_lit=" << expected_tokens.at(idx).literal
+              << " actual_type=" << tkn.type
+              << " actual_lit=" << tkn.literal << std::endl;
     if (expected_tokens.at(idx) != tkn) {
-      lexer.printDebugVector();
+      std::cerr << "MISMATCH at idx " << idx << std::endl;
       return false;
     }
     idx++;
     tkn = lexer.NextToken();
-  };
-  lexer.printDebugVector();
-  std::cout << idx << " " << expected_tokens.size() << std::endl;
+  }
+  std::cerr << "Loop ended. idx=" << idx
+            << " expected_size=" << expected_tokens.size() << std::endl;
   return (idx + 1) == expected_tokens.size();
 }
 
 bool compareExepectedAndRealityParser(const std::string& input,
                                       std::string expected_output) {
   auto tokens = lexInput(input);
+  for (auto t : tokens){
+    std::cerr << t.type << " ___ " << t.literal << std::endl;
+  }
   Parser parser(tokens);
 
   parser.build();

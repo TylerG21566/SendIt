@@ -142,14 +142,10 @@ REGISTER(AddExpr2)
 REGISTER(MulExpr)
 REGISTER(MulExpr2)
 REGISTER(Call)
-REGISTER(Call2)
-REGISTER(Atom)
 
 // FUNCTION INPUTS
 REGISTER(ParamsDef)
-REGISTER(ParamsDef2)
 REGISTER(Arg)
-REGISTER(Arg2)
 REGISTER(MultiStatement)
 REGISTER(FuncDef)
 
@@ -163,34 +159,42 @@ struct Terminal : Node {
 
 class Parser {
   std::unique_ptr<Ast::Node> head;
+
   ParserHead ph;
 
  public:
   Parser(std::vector<TokenStruct> ts);
+
   void build();
+
   Ast::Node* getAst();
+
   std::vector<std::string> IndentDisplay();
+
   std::string flatDisplay();
+
   bool hasError() { return ph.hasError(); };
+
   const std::vector<ParsingError>& getErrors() { return ph.getErrors(); }
+
   std::string displayErrors() {
     std::string s = "";
     for (auto e : getErrors()) {
-      s += e.errorType;
+      s += parsingErrorEnumToString(e.errorType);
     }
     return s;
   };
 };
 
 inline bool isAtomic(TokenType tt){
-  
+
   return tt == TknType::IDENT || tt == TknType::INT ||
              tt == TknType::LPAREN || tt == TknType::TRUE ||
              tt == TknType::FALSE;
 }
 
 inline bool isComparison(TokenType tt){
-  
+
   return tt == TknType::EQ || tt == TknType::NEQ ||
              tt == TknType::GT || tt == TknType::LT;
 }

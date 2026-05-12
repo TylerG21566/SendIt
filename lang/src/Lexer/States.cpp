@@ -35,6 +35,9 @@ bool LexerState::next_character_perserves_state(char ch, int length) {
 
   if (state == TknType::IDENT) return isalnum(ch) || ch == '_';
 
+  // length is the length of the working_literal consumed so far
+  // this prevents:
+  // === ... evaluating to = as the it terminates once the length of 2 characters is consumed 
   if ((state == TknType::BANG || state == TknType::ASSIGN) && length < 2) return ch == '=';
 
   // ILLEGAL character

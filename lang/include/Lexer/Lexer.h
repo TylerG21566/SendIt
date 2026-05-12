@@ -17,8 +17,8 @@ class Lexer {
   int size;
   bool debug_mode;
   std::vector<TokenStruct> tokens;
-  double row;
-  double col;
+  uint64_t row;
+  uint64_t col;
   LexerState ls;
 
  public:
@@ -36,7 +36,7 @@ class Lexer {
 
   TokenStruct NextToken();
 
-  TokenStruct newToken(TokenType tknType, std::string previous_literal);
+  TokenStruct newToken(TokenType tknType, std::string previous_literal, uint64_t row, uint64_t col);
 };
 
 Lexer sourceStringLexer(std::string input, bool dm);

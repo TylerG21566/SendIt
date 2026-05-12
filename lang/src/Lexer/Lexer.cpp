@@ -85,7 +85,7 @@ TokenStruct Lexer::NextToken() {
 
     working_literal += ch;
     new_token_needed = !ls.next_character_perserves_state(this->peek(), working_literal.size());
-    
+
     readChar();
   }
 
@@ -126,14 +126,17 @@ TokenStruct Lexer::NextToken() {
   else
     tt = TknType::ILLEGAL;
 
-  tok = newToken(tt, working_literal);
-  tokens.push_back(tok);
+  tok = newToken(tt, working_literal, row, col);
+  if (debug_mode){
+    tokens.push_back(tok);
+  }
+
 
   return tok;
 }
 
-TokenStruct Lexer::newToken(TokenType tknType, std::string previous_literal) {
-  return TokenStruct{tknType, previous_literal, 0, 0};
+TokenStruct Lexer::newToken(TokenType tknType, std::string previous_literal, uint64_t row, uint64_t col) {
+  return TokenStruct{tknType, previous_literal, row, col};
 };
 
 Lexer sourceStringLexer(std::string input, bool dm) {

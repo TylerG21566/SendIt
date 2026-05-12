@@ -58,7 +58,7 @@ TEST(LexerTests, invalid_ident) {
   std::string input = "1a23";
   std::vector<TokenStruct> expected_tokens = {
       {TknType::INT, "1"}, {TknType::IDENT, "a23"}, {TknType::END_F, ""}};
-
+  
   ASSERT_TRUE(compareExepectedAndReality(expected_tokens, input));
 }
 
